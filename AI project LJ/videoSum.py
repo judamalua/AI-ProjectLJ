@@ -3,7 +3,7 @@ import cv2
 from matplotlib import pyplot as plt
 
 def recorre_imagenes():
-    path = "prueba\\"
+    path = "C:\\Users\\Juanmi\\Desktop\\Pictures AI project"
 
     for image in os.listdir(path):
         input_path = os.path.join(path, image)

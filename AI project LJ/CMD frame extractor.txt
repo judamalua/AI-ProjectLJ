@@ -1,0 +1,1 @@
+ffmpeg -i C:\Users\Juanmi\Downloads\ffmpeg-20180613-67747c8-win64-static\video_patos.mp4 -vf fps=fps=1 captura-%d.png
