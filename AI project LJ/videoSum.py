@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 from random import randint
 from PIL import Image
+import math
 
 def recorre_imagenes(INPUTPATH, T, H):
     path = INPUTPATH
@@ -21,7 +22,7 @@ def recorre_imagenes(INPUTPATH, T, H):
 
             img = cv2.cv2.imread(input_path)
 
-            cv2.cv2.imshow('image', img)
+            #cv2.cv2.imshow('image', img)
 
             color = ('b', 'g', 'r')
             histr = dict()
@@ -38,14 +39,25 @@ def recorre_imagenes(INPUTPATH, T, H):
     #print(ListaFrames)
     return ListaFrames
 
-def calcularCentroidesIniciales(H, K):
+def calcularCentroidesIniciales(INPUTPATH, H, K):
     ListaCentroides = dict()
+    path = INPUTPATH
+
+    for image in os.listdir(path):
+        input_path = os.path.join(path, image)
+
+        #print(input_path)
+
+        img = cv2.cv2.imread(input_path)
+        imgSize = len(img)
+        break
+
 
     # Creamos una imagen negra
-    imgN = np.zeros([512,512,3], dtype=np.uint8)
+    imgN = np.zeros([imgSize,imgSize,3], dtype=np.uint8)
 
     # Creamos una imagen blanca
-    imgB = np.zeros([512,512,3], dtype=np.uint8)
+    imgB = np.zeros([imgSize,imgSize,3], dtype=np.uint8)
     imgB.fill(255)
 
     #dataN[256, 256] = [255, 0, 0]
@@ -58,21 +70,21 @@ def calcularCentroidesIniciales(H, K):
 
     for i,col in enumerate(color):
         histr[col] = cv2.cv2.calcHist([imgN], [i], None, [H], [0,H])
-        print(histr)
-        plt.plot(histr[col], color = col)
-        plt.xlim([0,H])
+        #print(histr)
+        #plt.plot(histr[col], color = col)
+        #plt.xlim([0,H])
         ListaCentroides["Centroide negro"] = histr
     
-    plt.show()
+    #plt.show()
 
     for j,colB in enumerate(color):
         histr[colB] = cv2.cv2.calcHist([imgB], [j], None, [H], [0,H])
-        print(histr)
-        plt.plot(histr[colB], color = colB)
-        plt.xlim([0,H])
+        #print(histr)
+        #plt.plot(histr[colB], color = colB)
+        #plt.xlim([0,H])
         ListaCentroides["Centroide blanco"] = histr
     
-    plt.show()
+    #plt.show()
 
 
     for index in range(K - 2):
@@ -81,7 +93,7 @@ def calcularCentroidesIniciales(H, K):
         title = "Centroide aleatorio {}".format(index)
 
         # Creamos una imagen aleatoria
-        randImg = np.zeros([512,512,3], dtype=np.uint8)
+        randImg = np.zeros([imgSize,imgSize,3], dtype=np.uint8)
         #randImg.fill(randint(0,255))
 
         #for x in range(512):
@@ -89,31 +101,40 @@ def calcularCentroidesIniciales(H, K):
                 #randImg[x][y] = randint(0,255)
 
         #randImg = np.random.rand(512, 512, 3)
-        for x in range(512):
-            for y in range(512):
+        for x in range(imgSize):
+            for y in range(imgSize):
                 randImg[x][y] = rgb[randint(0,2)]
 
     
     
-        cv2.cv2.imshow('image', randImg)
+        #cv2.cv2.imshow('image', randImg)
 
 
         for k,colR in enumerate(color):
             histr[colR] = cv2.cv2.calcHist([randImg], [k], None, [H], [0,H])
-            print(histr)
-            plt.plot(histr[colR], color = colR)
-            plt.xlim([0,H])
+            #print(histr)
+            #plt.plot(histr[colR], color = colR)
+            #plt.xlim([0,H])
             ListaCentroides[title] = histr
     
-        plt.show()
+        #plt.show()
 
     return ListaCentroides
 
 
 
-def aplicaKmedias(ListaFrames, K, H):
+def aplicaKmedias(ListaFrames, K, H, INPUTPATH):
     ListaFramesConClasificacion = dict()
-    centroidesIniciales = calcularCentroidesIniciales(H, K)
+    centroidesIniciales = calcularCentroidesIniciales(INPUTPATH, H, K)
+    dist1 = 0
+
+    for frame in ListaFrames.values():
+        for centroideInicial in centroidesIniciales.values():
+            for i in frame["r"]:
+                for j in centroideInicial["r"]:
+                    dist1 += (i-j)*(i-j) # Esto está mal, continuar por aquí
+            dist1 = math.sqrt(dist1)
+            #print(dist1)
 
 
 
@@ -123,9 +144,9 @@ def CalcularFotogramasClave(INPUTPATH, T, K, H):
         ListaFrames = recorre_imagenes(INPUTPATH, T, H)
         #print(ListaFrames)
     
-    aplicaKmedias(ListaFrames, K, H)
+    aplicaKmedias(ListaFrames, K, H, INPUTPATH)
 
 
-#CalcularFotogramasClave("C:\\Users\\Juanmi\\Desktop\\Pictures AI project",4,3,256)
+CalcularFotogramasClave("C:\\Users\\Juanmi\\Desktop\\Pictures AI project",4,3,256)
 #aplicaKmedias(list(), 3, 256)
-listaPrueba = calcularCentroidesIniciales(256, 3)
+#listaPrueba = calcularCentroidesIniciales(256, 3)
