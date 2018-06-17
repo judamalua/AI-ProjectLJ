@@ -125,16 +125,59 @@ def calcularCentroidesIniciales(INPUTPATH, H, K):
 
 def aplicaKmedias(ListaFrames, K, H, INPUTPATH):
     ListaFramesConClasificacion = dict()
+    distKeyFrameDict = dict()
+    centroidAllFramesDict = dict()
+    minimumTotal = 0
+    index = 0
     centroidesIniciales = calcularCentroidesIniciales(INPUTPATH, H, K)
-    dist1 = 0
 
-    for frame in ListaFrames.values():
-        for centroideInicial in centroidesIniciales.values():
+   # for frame in ListaFrames.values():
+       # for i in frame["r"]:
+          #  print(int(i))
+
+
+    #for centroide in centroidesIniciales.values():
+        #for i in centroide["r"]:
+            #print(int(i))
+
+
+    for frame, keyFrame in zip(ListaFrames.values(), ListaFrames.keys()):
+        minimum = 0
+        index += 1
+        for centroideInicial, keyCentroide in zip(centroidesIniciales.values(), centroidesIniciales.keys()):
+            for i in frame["b"]:
+                distB = 0
+                for j in centroideInicial["b"]:
+                    distB += (int(i)-int(j))*(int(i)-int(j))
+            distB = math.sqrt(float(distB))
+            for i in frame["g"]:
+                distG = 0
+                for j in centroideInicial["g"]:
+                    distG += (int(i)-int(j))*(int(i)-int(j))
+            distG = math.sqrt(float(distG))
             for i in frame["r"]:
+                distR = 0
                 for j in centroideInicial["r"]:
-                    dist1 += (i-j)*(i-j) # Esto está mal, continuar por aquí
-            dist1 = math.sqrt(dist1)
-            #print(dist1)
+                    distR += (int(i)-int(j))*(int(i)-int(j))
+            distR = math.sqrt(float(distR))
+
+            distTotal = distB + distG + distR
+
+            if minimum == 0 or distTotal < minimum:
+                minimum = distTotal
+
+            #print("=====================================================")
+            
+            distKeyFrameDict[keyFrame] = distTotal
+
+            centroidAllFramesDict[keyCentroide] = distKeyFrameDict
+
+            
+        
+        #print(minimum)
+    minimumTotal = minimum
+    #print(minimumTotal)
+    #print(centroidAllFramesDict)
 
 
 
