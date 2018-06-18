@@ -127,9 +127,14 @@ def aplicaKmedias(ListaFrames, K, H, INPUTPATH):
     ListaFramesConClasificacion = dict()
     distKeyFrameDict = dict()
     centroidAllFramesDict = dict()
+    centroidesFrames = dict()
     minimumTotal = 0
-    index = 0
+    
     centroidesIniciales = calcularCentroidesIniciales(INPUTPATH, H, K)
+    print(centroidesIniciales)
+
+    clavesMinimas = list()
+    valoresMinimos = list()
 
    # for frame in ListaFrames.values():
        # for i in frame["r"]:
@@ -143,42 +148,67 @@ def aplicaKmedias(ListaFrames, K, H, INPUTPATH):
 
     for frame, keyFrame in zip(ListaFrames.values(), ListaFrames.keys()):
         minimum = 0
-        index += 1
+        index = 0
+        numCentroide = 0
+        distanciaMinima = math.inf
         for centroideInicial, keyCentroide in zip(centroidesIniciales.values(), centroidesIniciales.keys()):
-            for i in frame["b"]:
+            for iB in frame["b"]:
                 distB = 0
-                for j in centroideInicial["b"]:
-                    distB += (int(i)-int(j))*(int(i)-int(j))
+                for jB in centroideInicial["b"]:
+                    distB += (int(iB)-int(jB))*(int(iB)-int(jB))
             distB = math.sqrt(float(distB))
-            for i in frame["g"]:
+            for iG in frame["g"]:
                 distG = 0
-                for j in centroideInicial["g"]:
-                    distG += (int(i)-int(j))*(int(i)-int(j))
+                for jG in centroideInicial["g"]:
+                    distG += (int(iG)-int(jG))*(int(iG)-int(jG))
             distG = math.sqrt(float(distG))
-            for i in frame["r"]:
+            for iR in frame["r"]:
                 distR = 0
-                for j in centroideInicial["r"]:
-                    distR += (int(i)-int(j))*(int(i)-int(j))
+                for jR in centroideInicial["r"]:
+                    distR += (int(iR)-int(jR))*(int(iR)-int(jR))
             distR = math.sqrt(float(distR))
 
             distTotal = distB + distG + distR
+            print(distTotal)
 
-            if minimum == 0 or distTotal < minimum:
-                minimum = distTotal
+            if index == 0:
+                clavesMinimas.append(keyFrame)
+                valoresMinimos.append(keyCentroide)
 
+            if distTotal < distanciaMinima:
+                distanciaMinima = distTotal
+                del valoresMinimos[index]
+                valoresMinimos.insert(index, keyCentroide)
+                #valoresMinimos[numCentroide] = keyCentroide
+
+            index += 1
             #print("=====================================================")
             
+            
+
             distKeyFrameDict[keyFrame] = distTotal
 
+            #for distancia in distKeyFrameDict.values():
+                #if distancia == distTotal:
+                    #centroidesFrames[distKeyFrameDict[index]] = distancia
+                
+
+            #listFramesLuis = [k for k,v in distKeyFrameDict.items() if v == distanciaMinima]
+
+            #print(listFramesLuis)
+
             centroidAllFramesDict[keyCentroide] = distKeyFrameDict
+
+
 
             
         
         #print(minimum)
     minimumTotal = minimum
     #print(minimumTotal)
-    #print(centroidAllFramesDict)
-
+    print(centroidAllFramesDict)
+    #print(clavesMinimas)
+    #print(valoresMinimos)
 
 
 def CalcularFotogramasClave(INPUTPATH, T, K, H):
