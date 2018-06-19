@@ -67,32 +67,32 @@ def calcularCentrosIniciales(INPUTPATH, H, K):
     #imgN.show()
 
     color = ('b', 'g', 'r')
-    histr = dict()
+    #histr = dict()
 
-    for i,col in enumerate(color):
-        histr[col] = cv2.cv2.calcHist([imgN], [i], None, [H], [0,H])
+    #for i,col in enumerate(color):
+        #histr[col] = cv2.cv2.calcHist([imgN], [i], None, [H], [0,H])
         #print(histr)
         #plt.plot(histr[col], color = col)
         #plt.xlim([0,H])
     
-    ListaCentroides["Centroide negro"] = histr
+    #ListaCentroides["Centroide negro"] = histr
     
     #plt.show()
 
-    histr = dict()
+    #histr = dict()
 
-    for j,colB in enumerate(color):
-        histr[colB] = cv2.cv2.calcHist([imgB], [j], None, [H], [0,H])
+    #for j,colB in enumerate(color):
+        #histr[colB] = cv2.cv2.calcHist([imgB], [j], None, [H], [0,H])
         #print(histr)
         #plt.plot(histr[colB], color = colB)
         #plt.xlim([0,H])
     
-    ListaCentroides["Centroide blanco"] = histr
+    #ListaCentroides["Centroide blanco"] = histr
     
     #plt.show()
 
 
-    for index in range(K - 2):
+    for index in range(K):
         red, green, blue = (randint(0,255), randint(0,255), randint(0,255)), (randint(0,255), randint(0,255), randint(0,255)), (randint(0,255), randint(0,255), randint(0,255))
         rgb = [red, green, blue]
         title = "Centroide aleatorio {}".format(index)
@@ -112,19 +112,19 @@ def calcularCentrosIniciales(INPUTPATH, H, K):
 
     
     
-        #cv2.cv2.imshow('image', randImg)
+        cv2.cv2.imshow('image', randImg)
 
         histr = dict()
 
         for k,colR in enumerate(color):
             histr[colR] = cv2.cv2.calcHist([randImg], [k], None, [H], [0,H])
             #print(histr)
-            #plt.plot(histr[colR], color = colR)
-            #plt.xlim([0,H])
+            plt.plot(histr[colR], color = colR)
+            plt.xlim([0,H])
         
         ListaCentroides[title] = histr
     
-        #plt.show()
+        plt.show()
 
     return ListaCentroides
 
@@ -138,10 +138,10 @@ def aplicaKmedias(ListaFrames, K, H, INPUTPATH):
     minimumTotal = 0
     
     centroidesIniciales = calcularCentrosIniciales(INPUTPATH, H, K)
-    print(centroidesIniciales)
+    #print(centroidesIniciales)
 
-    clavesMinimas = list()
-    valoresMinimos = list()
+    clavesMinimas = list()#[1]*len(ListaFrames.keys())
+    valoresMinimos = list()#[1]*len(ListaFrames.keys())
 
    # for frame in ListaFrames.values():
        # for i in frame["r"]:
@@ -152,13 +152,17 @@ def aplicaKmedias(ListaFrames, K, H, INPUTPATH):
         #for i in centroide["r"]:
             #print(int(i))
 
-
+    numCentroide = 0
+    index = 0
     for frame, keyFrame in zip(ListaFrames.values(), ListaFrames.keys()):
         minimum = 0
-        index = 0
-        numCentroide = 0
+        
+        indexCentros = 0
+        
+        
         distanciaMinima = math.inf
         for centroideInicial, keyCentroide in zip(centroidesIniciales.values(), centroidesIniciales.keys()):
+            distTotal = 0
             for iB in frame["b"]:
                 distB = 0
                 for jB in centroideInicial["b"]:
@@ -177,18 +181,30 @@ def aplicaKmedias(ListaFrames, K, H, INPUTPATH):
 
             distTotal = distB + distG + distR
             print(distTotal)
-
-            if index == 0:
+            print("Index centros: {}".format(indexCentros))
+            print("Index total: {}".format(index))
+            if indexCentros == 0:
+                #del clavesMinimas[numCentroide]
+                #clavesMinimas.insert(numCentroide, keyFrame)
                 clavesMinimas.append(keyFrame)
+                #del valoresMinimos[numCentroide]
+                #valoresMinimos.insert(numCentroide, keyCentroide)
                 valoresMinimos.append(keyCentroide)
 
             if distTotal < distanciaMinima:
                 distanciaMinima = distTotal
-                #del valoresMinimos[index]
-                #valoresMinimos.insert(index, keyCentroide)
-                valoresMinimos[numCentroide] = keyCentroide
+                #if valoresMinimos[index] == None:
+                    #valoresMinimos.append(keyCentroide)
+                del valoresMinimos[index]
+                valoresMinimos.insert(index, keyCentroide)
+                #valoresMinimos[index] = keyCentroide
 
-            index += 1
+            
+            indexCentros += 1
+
+            
+            
+
             #print("=====================================================")
             
             
@@ -206,7 +222,7 @@ def aplicaKmedias(ListaFrames, K, H, INPUTPATH):
 
             centroidAllFramesDict[keyCentroide] = distKeyFrameDict
 
-
+        index += 1
 
             
         
@@ -227,6 +243,6 @@ def CalcularFotogramasClave(INPUTPATH, T, K, H):
     aplicaKmedias(ListaFrames, K, H, INPUTPATH)
 
 
-CalcularFotogramasClave("C:\\Users\\Juanmi\\Desktop\\Pictures AI project",4,3,256)
+CalcularFotogramasClave("C:\\Users\\Juanmi\\Desktop\\Pictures AI project",2,3,256)
 #aplicaKmedias(list(), 3, 256)
 #listaPrueba = calcularCentrosIniciales(256, 3)
