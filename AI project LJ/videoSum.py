@@ -32,14 +32,15 @@ def recorre_imagenes(INPUTPATH, T, H):
                 #print(histr)
                 #plt.plot(histr[col], color = col)
                 #plt.xlim([0,H])
-                ListaFrames[input_path] = histr
+            
+            ListaFrames[input_path] = histr
         
             #plt.show()
 
     #print(ListaFrames)
     return ListaFrames
 
-def calcularCentroidesIniciales(INPUTPATH, H, K):
+def calcularCentrosIniciales(INPUTPATH, H, K):
     ListaCentroides = dict()
     path = INPUTPATH
 
@@ -73,16 +74,20 @@ def calcularCentroidesIniciales(INPUTPATH, H, K):
         #print(histr)
         #plt.plot(histr[col], color = col)
         #plt.xlim([0,H])
-        ListaCentroides["Centroide negro"] = histr
+    
+    ListaCentroides["Centroide negro"] = histr
     
     #plt.show()
+
+    histr = dict()
 
     for j,colB in enumerate(color):
         histr[colB] = cv2.cv2.calcHist([imgB], [j], None, [H], [0,H])
         #print(histr)
         #plt.plot(histr[colB], color = colB)
         #plt.xlim([0,H])
-        ListaCentroides["Centroide blanco"] = histr
+    
+    ListaCentroides["Centroide blanco"] = histr
     
     #plt.show()
 
@@ -109,13 +114,15 @@ def calcularCentroidesIniciales(INPUTPATH, H, K):
     
         #cv2.cv2.imshow('image', randImg)
 
+        histr = dict()
 
         for k,colR in enumerate(color):
             histr[colR] = cv2.cv2.calcHist([randImg], [k], None, [H], [0,H])
             #print(histr)
             #plt.plot(histr[colR], color = colR)
             #plt.xlim([0,H])
-            ListaCentroides[title] = histr
+        
+        ListaCentroides[title] = histr
     
         #plt.show()
 
@@ -130,7 +137,7 @@ def aplicaKmedias(ListaFrames, K, H, INPUTPATH):
     centroidesFrames = dict()
     minimumTotal = 0
     
-    centroidesIniciales = calcularCentroidesIniciales(INPUTPATH, H, K)
+    centroidesIniciales = calcularCentrosIniciales(INPUTPATH, H, K)
     print(centroidesIniciales)
 
     clavesMinimas = list()
@@ -177,9 +184,9 @@ def aplicaKmedias(ListaFrames, K, H, INPUTPATH):
 
             if distTotal < distanciaMinima:
                 distanciaMinima = distTotal
-                del valoresMinimos[index]
-                valoresMinimos.insert(index, keyCentroide)
-                #valoresMinimos[numCentroide] = keyCentroide
+                #del valoresMinimos[index]
+                #valoresMinimos.insert(index, keyCentroide)
+                valoresMinimos[numCentroide] = keyCentroide
 
             index += 1
             #print("=====================================================")
@@ -206,9 +213,9 @@ def aplicaKmedias(ListaFrames, K, H, INPUTPATH):
         #print(minimum)
     minimumTotal = minimum
     #print(minimumTotal)
-    print(centroidAllFramesDict)
-    #print(clavesMinimas)
-    #print(valoresMinimos)
+    #print(centroidAllFramesDict)
+    print(clavesMinimas)
+    print(valoresMinimos)
 
 
 def CalcularFotogramasClave(INPUTPATH, T, K, H):
@@ -222,4 +229,4 @@ def CalcularFotogramasClave(INPUTPATH, T, K, H):
 
 CalcularFotogramasClave("C:\\Users\\Juanmi\\Desktop\\Pictures AI project",4,3,256)
 #aplicaKmedias(list(), 3, 256)
-#listaPrueba = calcularCentroidesIniciales(256, 3)
+#listaPrueba = calcularCentrosIniciales(256, 3)
