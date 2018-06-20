@@ -3,7 +3,6 @@ import cv2
 from matplotlib import pyplot as plt
 import numpy as np
 from random import randint
-from PIL import Image
 import math
 
 def recorre_imagenes(INPUTPATH, T, H):
@@ -41,18 +40,11 @@ def recorre_imagenes(INPUTPATH, T, H):
     return ListaFrames
 
 def calcularCentrosIniciales(INPUTPATH, H, K):
-    ListaCentroides = dict()
+    ListaCentros = dict()
     path = INPUTPATH
     ListaFramesTotales = dict()
+    color = ('b', 'g', 'r')
 
-    ##for image in os.listdir(path):
-        ##input_path = os.path.join(path, image)
-
-        ##print(input_path)
-
-        ##img = cv2.cv2.imread(input_path)
-        ##imgSize = len(img)
-        ##break
     for image in os.listdir(path):
         input_path = os.path.join(path, image)
 
@@ -62,7 +54,6 @@ def calcularCentrosIniciales(INPUTPATH, H, K):
 
         #cv2.cv2.imshow('image', img)
 
-        color = ('b', 'g', 'r')
         histr = dict()
 
         for i,col in enumerate(color):
@@ -71,47 +62,11 @@ def calcularCentrosIniciales(INPUTPATH, H, K):
             #plt.plot(histr[col], color = col)
             #plt.xlim([0,H])
             
+        #plt.show()
+
         ListaFramesTotales[input_path] = histr
         
-            #plt.show()
-
-    # Creamos una imagen negra
-    ##imgN = np.zeros([imgSize,imgSize,3], dtype=np.uint8)
-
-    # Creamos una imagen blanca
-    ##imgB = np.zeros([imgSize,imgSize,3], dtype=np.uint8)
-    ##imgB.fill(255)
-
-    #dataN[256, 256] = [255, 0, 0]
-    # Con la librería Image pasamos los datos de la matriz a imagen
-    #imgN = Image.fromarray(dataN, 'RGB')
-    #imgN.show()
-
-    color = ('b', 'g', 'r')
-    #histr = dict()
-
-    #for i,col in enumerate(color):
-        #histr[col] = cv2.cv2.calcHist([imgN], [i], None, [H], [0,H])
-        #print(histr)
-        #plt.plot(histr[col], color = col)
-        #plt.xlim([0,H])
-    
-    #ListaCentroides["Centroide negro"] = histr
-    
-    #plt.show()
-
-    #histr = dict()
-
-    #for j,colB in enumerate(color):
-        #histr[colB] = cv2.cv2.calcHist([imgB], [j], None, [H], [0,H])
-        #print(histr)
-        #plt.plot(histr[colB], color = colB)
-        #plt.xlim([0,H])
-    
-    #ListaCentroides["Centroide blanco"] = histr
-    
-    #plt.show()
-
+            
     
     for index in range(K):
         histr1 = dict()
@@ -120,14 +75,7 @@ def calcularCentrosIniciales(INPUTPATH, H, K):
         aleatorio1 = randint(0, len(ListaFramesTotales.values()) - 1)
         aleatorio2 = randint(0, len(ListaFramesTotales.values()) - 1)
         aleatorio3 = randint(0, len(ListaFramesTotales.values()) - 1)
-        #print(aleatorio1)
-        #print("=========================")
-        #print(aleatorio2)
-        #print("=========================")
-        #print(aleatorio3)
-        #print("=========================")
-
-        #imgSuma = np.zeros([imgSize,imgSize,3], dtype=np.uint8)
+    
         sumaB = 0
         sumaG = 0
         sumaR = 0
@@ -141,20 +89,17 @@ def calcularCentrosIniciales(INPUTPATH, H, K):
         listOfListsG = [histr1["g"], histr2["g"], histr3["g"]]
         listOfListsR = [histr1["r"], histr2["r"], histr3["r"]]
 
-        sumaB = [sum(x)/3 for x in zip(*listOfListsB)]#np.sum(histr1["b"], histr2["b"])
-        #sumaB /= 2
-        sumaG = [sum(y)/3 for y in zip(*listOfListsG)]#np.sum(histr1["g"], histr2["g"])
-        #sumaG /= 2
-        sumaR = [sum(z)/3 for z in zip(*listOfListsR)]#np.sum(histr1["r"], histr2["r"])
-        #sumaR /= 2
+        sumaB = [sum(x)/3 for x in zip(*listOfListsB)]
+        sumaG = [sum(y)/3 for y in zip(*listOfListsG)]
+        sumaR = [sum(z)/3 for z in zip(*listOfListsR)]
         
         histrSuma["b"] = sumaB
         histrSuma["g"] = sumaG
         histrSuma["r"] = sumaR
 
-        ##ListaCentroides[title] = histr1
+        ##ListaCentros[title] = histr1
 
-        ListaCentroides[title] = histrSuma
+        ListaCentros[title] = histrSuma
 
         ##for k,colR in enumerate(color):
             #histr[colR] = cv2.cv2.calcHist([randImg], [k], None, [H], [0,H])
@@ -165,165 +110,162 @@ def calcularCentrosIniciales(INPUTPATH, H, K):
         #ListaCentroides[title] = histr
     
         ##plt.show()
-        
 
-    ##for index in range(K):
-        ##red, green, blue = (randint(0,255), randint(0,255), randint(0,255)), (randint(0,255), randint(0,255), randint(0,255)), (randint(0,255), randint(0,255), randint(0,255))
-        ##rgb = [red, green, blue]
-        ##title = "Centroide aleatorio {}".format(index)
-
-        # Creamos una imagen aleatoria
-        ##randImg = np.zeros([imgSize,imgSize,3], dtype=np.uint8)
-        #randImg.fill(randint(0,255))
-
-        #for x in range(512):
-            #for y in range(512):
-                #randImg[x][y] = randint(0,255)
-
-        #randImg = np.random.rand(512, 512, 3)
-        ##for x in range(imgSize):
-            ##for y in range(imgSize):
-                ##randImg[x][y] = rgb[randint(0,2)]
-
-    
-    
-        #cv2.cv2.imshow('image', randImg)
-
-        ##histr = dict()
-
-        ##for k,colR in enumerate(color):
-            ##histr[colR] = cv2.cv2.calcHist([randImg], [k], None, [H], [0,H])
-            #print(histr)
-            #plt.plot(histr[colR], color = colR)
-            #plt.xlim([0,H])
-        
-        ##ListaCentroides[title] = histr
-    
-        #plt.show()
-
-    return ListaCentroides
-
-
+    return ListaCentros
 
 def aplicaKmedias(ListaFrames, K, H, INPUTPATH):
     ListaFramesConClasificacion = dict()
-    distKeyFrameDict = dict()
-    centroidAllFramesDict = dict()
-    centroidesFrames = dict()
-    minimumTotal = 0
-    color = ('b', 'g', 'r')
     
-    centroidesIniciales = calcularCentrosIniciales(INPUTPATH, H, K)
+    centrosIniciales = calcularCentrosIniciales(INPUTPATH, H, K)
     #print(centroidesIniciales)
 
-    clavesMinimas = list()#[1]*len(ListaFrames.keys())
-    valoresMinimos = list()#[1]*len(ListaFrames.keys())
-
-   # for frame in ListaFrames.values():
-       # for i in frame["r"]:
-          #  print(int(i))
+    clavesMinimas = list()
+    valoresMinimos = list()
 
 
-    #for centroide in centroidesIniciales.values():
-        #for i in centroide["r"]:
-            #print(int(i))
-
-    for keyCentro in centroidesIniciales.keys():
+    for keyCentro in centrosIniciales.keys():
         ListaFramesConClasificacion[keyCentro] = list()
 
-    numCentroide = 0
     index = 0
     for frame, keyFrame in zip(ListaFrames.values(), ListaFrames.keys()):
-        minimum = 0
         nombreCentro = ""
         indexCentros = 0
         #print(frame)
         
         #print("==============================================")
         distanciaMinima = math.inf
-        for centroideInicial, keyCentroide in zip(centroidesIniciales.values(), centroidesIniciales.keys()):
+        for centroInicial, keyCentro in zip(centrosIniciales.values(), centrosIniciales.keys()):
+            # Declaramos una variable para almacenar la distancia total de cada imagen a cada centro
             distTotal = 0
-            distB = 0
-            distG = 0
-            distR = 0
-            
-            #for dist, col in enumerate(color):
-                #distTotal += sum(math.sqrt(math.pow([x - y for (x, y) in zip(frame[col], centroideInicial[col])], 2)))
+            # Declaramos tres variables para ir acumulando las distancias de cada canal de las imágenes
+            distB, distG, distR = 0, 0, 0
+            # Declaramos los índices para cada canal
+            indiceB, indiceG, indiceR = 0, 0, 0
 
             # Para cada frame del canal 'b' calculamos la distancia con cada centro
             for iB in frame["b"]:
-                for jB in centroideInicial["b"]:
-                    distB += math.pow((int(iB) - int(jB)), 2)
+                distB += math.pow(int(iB) - int(centroInicial["b"][indiceB]), 2)
+                indiceB += 1
+            
             distBSqrt = math.sqrt(float(distB))
 
             # Para cada frame del canal 'g' calculamos la distancia con cada centro
             for iG in frame["g"]:
-                for jG in centroideInicial["g"]:
-                    distG += math.pow((int(iG) - int(jG)), 2)
+                distG += math.pow(int(iG) - int(centroInicial["g"][indiceG]), 2)
+                indiceG += 1
             distGSqrt = math.sqrt(float(distG))
 
             # Para cada frame del canal 'r' calculamos la distancia con cada centro
             for iR in frame["r"]:
-                for jR in centroideInicial["r"]:
-                    distR += math.pow((int(iR) - int(jR)), 2)
+                distR += math.pow(int(iR) - int(centroInicial["r"][indiceR]), 2)
+                indiceR += 1
             distRSqrt = math.sqrt(float(distR))
 
             distTotal = (distBSqrt + distGSqrt + distRSqrt)/3
 
             #print(distTotal)
-            #print("Index centros: {}".format(indexCentros))
-            #print("Index total: {}".format(index))
+
             if indexCentros == 0:
                 clavesMinimas.append(keyFrame)
-                valoresMinimos.append(keyCentroide)
+                valoresMinimos.append(keyCentro)
 
             if distTotal < distanciaMinima:
                 distanciaMinima = distTotal
                 del valoresMinimos[index]
-                valoresMinimos.insert(index, keyCentroide)
-                nombreCentro = keyCentroide
+                valoresMinimos.insert(index, keyCentro)
+                nombreCentro = keyCentro
 
             
             indexCentros += 1
 
 
-            #print("=====================================================")
-            
-            
-
-            distKeyFrameDict[keyFrame] = distTotal
-
-            #for distancia in distKeyFrameDict.values():
-                #if distancia == distTotal:
-                    #centroidesFrames[distKeyFrameDict[index]] = distancia
-                
-
-            #listFramesLuis = [k for k,v in distKeyFrameDict.items() if v == distanciaMinima]
-
-            #print(listFramesLuis)
-
-            centroidAllFramesDict[keyCentroide] = distKeyFrameDict
-
         index += 1
 
             
         ListaFramesConClasificacion[nombreCentro].append(keyFrame)
-        #print(ListaFramesConClasificacion)
         #print(minimum)
     
     
-    minimumTotal = minimum
+    
     #print(minimumTotal)
-    #print(centroidAllFramesDict)
-    print(clavesMinimas)
-    print(valoresMinimos)
+    #print(clavesMinimas)
+    #print(valoresMinimos)
     print("==============================================================")
     #print(ListaFramesConClasificacion)
 
-    indiceCentros = 0
+    jaja = actualizaCentros(ListaFrames, ListaFramesConClasificacion, centrosIniciales)
     
     
         
+def actualizaCentros(dictNombreFramesHistograma, dictNombreCentroNombreFrame, dictCentrosHistr):
+    index = 0
+    dictCentrosHistrActualizado = dict()
+    histrCentroActualizado = dict()
+    title = "Centro actualizado {}".format(index)
+    title2 = "Centro No actualizado {}".format(index)
+    
+    for nombreCentro, histrCentro in dictCentrosHistr.items():
+        
+        if len(dictNombreCentroNombreFrame[nombreCentro]) == 0:
+            dictCentrosHistrActualizado[title2] = histrCentro
+        else:
+
+            #listOfListsB = []
+            #listOfListsG = []
+            #listOfListsR = []
+            #for nombreFrame, histr in dictNombreFramesHistograma.items():
+            
+            #sumaB = [sum(x)/3 for x in zip(*listOfListsB)]
+            #sumaG = [sum(y)/3 for y in zip(*listOfListsG)]
+            #sumaR = [sum(z)/3 for z in zip(*listOfListsR)]
+
+            nombresFrames = dictNombreCentroNombreFrame[nombreCentro]
+            #print(nombresFrames)
+            #print("======================================================")
+            #print(dictNombreFramesHistograma[ola]["b"])
+            acumTotal = dict()
+            acumTotal["b"] = []
+            acumTotal["g"] = []
+            acumTotal["r"] = []
+            
+            for nombre in nombresFrames:
+                acumB= list()
+                acumG= list()
+                acumR= list()
+                acumB = dictNombreFramesHistograma[nombre]["b"]
+                acumG = dictNombreFramesHistograma[nombre]["g"]
+                acumR = dictNombreFramesHistograma[nombre]["r"]
+                indexPositionB = 0
+                indexPositionG = 0
+                indexPositionR = 0
+                for iB in acumTotal["b"]:
+                    acumTotal["b"][iB]= iB + acumB[indexPositionB]/len(nombresFrames)
+                    indexPositionB += 1
+                for iG in acumTotal["g"]:
+                    acumTotal["g"][iG]= iG + acumG[indexPositionG]/len(nombresFrames)
+                    indexPositionG += 1
+                for iR in acumTotal["r"]:
+                    acumTotal["r"][iR]= iR = acumR[indexPositionR]/len(nombresFrames)
+                    indexPositionR += 1
+
+        
+            #acumTotal["b"] /=len(nombresFrames)
+            #acumTotal["g"] /=len(nombresFrames)
+            #acumTotal["r"] /=len(nombresFrames)
+            
+            dictCentrosHistrActualizado[title] = acumTotal
+            print(dictCentrosHistrActualizado)
+
+            #histrCentroActualizado["b"] = np.sum(dictNombreFramesHistograma[dictNombreCentroNombreFrame[nombreCentro]]["b"])#/len(dictCentroNombreFrame[nombreCentro])
+            #histrCentroActualizado["g"] = np.sum(dictNombreFramesHistograma[dictNombreCentroNombreFrame[nombreCentro]]["g"])#/len(dictCentroNombreFrame[nombreCentro])
+            #histrCentroActualizado["r"] = np.sum(dictNombreFramesHistograma[dictNombreCentroNombreFrame[nombreCentro]]["r"])#/len(dictCentroNombreFrame[nombreCentro])
+            #print(histrCentroActualizado)
+               #dictCentrosHistrActualizado[title]["b"] +=
+        index += 1
+    
+    
+
+    return 0
 
 
 
@@ -338,7 +280,7 @@ def CalcularFotogramasClave(INPUTPATH, T, K, H):
     aplicaKmedias(ListaFrames, K, H, INPUTPATH)
 
 
-CalcularFotogramasClave("C:\\Users\\Juanmi\\Desktop\\Pictures AI project",5,15,140)
+CalcularFotogramasClave("C:\\Users\\Juanmi\\Desktop\\Pictures AI project",5,5,180)
 #CalcularFotogramasClave("C:\\Users\\Juanmi\\Desktop\\video manu",10,20,256)
 #aplicaKmedias(list(), 3, 256)
 #listaPrueba = calcularCentrosIniciales(256, 3)
