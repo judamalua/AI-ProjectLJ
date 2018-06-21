@@ -116,14 +116,14 @@ def calcularCentrosIniciales(INPUTPATH, H, K):
 def aplicaKmedias(ListaFrames, K, H, INPUTPATH):
     ListaFramesConClasificacion = dict()
     
-    centrosIniciales = calcularCentrosIniciales(INPUTPATH, H, K)
-    #print(centroidesIniciales)
+    centrosAlgoritmo = calcularCentrosIniciales(INPUTPATH, H, K)
+    #print(centrosIniciales)
 
     clavesMinimas = list()
     valoresMinimos = list()
 
 
-    for keyCentro in centrosIniciales.keys():
+    for keyCentro in centrosAlgoritmo.keys():
         ListaFramesConClasificacion[keyCentro] = list()
 
     index = 0
@@ -134,7 +134,7 @@ def aplicaKmedias(ListaFrames, K, H, INPUTPATH):
         
         #print("==============================================")
         distanciaMinima = math.inf
-        for centroInicial, keyCentro in zip(centrosIniciales.values(), centrosIniciales.keys()):
+        for centroInicial, keyCentro in zip(centrosAlgoritmo.values(), centrosAlgoritmo.keys()):
             # Declaramos una variable para almacenar la distancia total de cada imagen a cada centro
             distTotal = 0
             # Declaramos tres variables para ir acumulando las distancias de cada canal de las imágenes
@@ -190,82 +190,90 @@ def aplicaKmedias(ListaFrames, K, H, INPUTPATH):
     #print(minimumTotal)
     #print(clavesMinimas)
     #print(valoresMinimos)
-    print("==============================================================")
+    #print("==============================================================")
     #print(ListaFramesConClasificacion)
 
-    jaja = actualizaCentros(ListaFrames, ListaFramesConClasificacion, centrosIniciales)
+    #print(centrosIniciales)
+    #print("==============================================================")
+    centrosAlgoritmo = actualizaCentros(ListaFrames, ListaFramesConClasificacion, centrosAlgoritmo)
     
     
         
 def actualizaCentros(dictNombreFramesHistograma, dictNombreCentroNombreFrame, dictCentrosHistr):
     index = 0
     dictCentrosHistrActualizado = dict()
-    histrCentroActualizado = dict()
-    title = "Centro actualizado {}".format(index)
-    title2 = "Centro No actualizado {}".format(index)
+    
     
     for nombreCentro, histrCentro in dictCentrosHistr.items():
+        histrSuma = dict()
+        #acum = {"b": [0]*longitudHistr, "g": [0]*longitudHistr, "r": [0]*longitudHistr}
+        title = "Centro actualizado {}".format(index)
+        #print(len(dictNombreCentroNombreFrame[nombreCentro]))
         
         if len(dictNombreCentroNombreFrame[nombreCentro]) == 0:
-            dictCentrosHistrActualizado[title2] = histrCentro
+            dictCentrosHistrActualizado[title] = histrCentro
         else:
+            listOfListsB = []
+            listOfListsG = []
+            listOfListsR = []
 
-            #listOfListsB = []
-            #listOfListsG = []
-            #listOfListsR = []
-            #for nombreFrame, histr in dictNombreFramesHistograma.items():
+            for nombreCentroDentro in dictNombreCentroNombreFrame.keys():
+                if nombreCentro == nombreCentroDentro:
+                    for histogramaFrame in dictNombreFramesHistograma.values():
+                        listOfListsB.append(histogramaFrame["b"])
+                        listOfListsG.append(histogramaFrame["g"])
+                        listOfListsR.append(histogramaFrame["r"])
             
-            #sumaB = [sum(x)/3 for x in zip(*listOfListsB)]
-            #sumaG = [sum(y)/3 for y in zip(*listOfListsG)]
-            #sumaR = [sum(z)/3 for z in zip(*listOfListsR)]
+            sumaB = [sum(x)/len(dictNombreCentroNombreFrame[nombreCentro]) for x in zip(*listOfListsB)]
+            sumaG = [sum(y)/len(dictNombreCentroNombreFrame[nombreCentro]) for y in zip(*listOfListsG)]
+            sumaR = [sum(z)/len(dictNombreCentroNombreFrame[nombreCentro]) for z in zip(*listOfListsR)]
 
-            nombresFrames = dictNombreCentroNombreFrame[nombreCentro]
-            #print(nombresFrames)
-            #print("======================================================")
-            #print(dictNombreFramesHistograma[ola]["b"])
-            acumTotal = dict()
-            acumTotal["b"] = []
-            acumTotal["g"] = []
-            acumTotal["r"] = []
+            histrSuma["b"] = sumaB
+            histrSuma["g"] = sumaG
+            histrSuma["r"] = sumaR
             
-            for nombre in nombresFrames:
-                acumB= list()
-                acumG= list()
-                acumR= list()
-                acumB = dictNombreFramesHistograma[nombre]["b"]
-                acumG = dictNombreFramesHistograma[nombre]["g"]
-                acumR = dictNombreFramesHistograma[nombre]["r"]
-                indexPositionB = 0
-                indexPositionG = 0
-                indexPositionR = 0
-                for iB in acumTotal["b"]:
-                    acumTotal["b"][iB]= iB + acumB[indexPositionB]/len(nombresFrames)
-                    indexPositionB += 1
-                for iG in acumTotal["g"]:
-                    acumTotal["g"][iG]= iG + acumG[indexPositionG]/len(nombresFrames)
-                    indexPositionG += 1
-                for iR in acumTotal["r"]:
-                    acumTotal["r"][iR]= iR = acumR[indexPositionR]/len(nombresFrames)
-                    indexPositionR += 1
+            dictCentrosHistrActualizado[title] = histrSuma
 
-        
-            #acumTotal["b"] /=len(nombresFrames)
-            #acumTotal["g"] /=len(nombresFrames)
-            #acumTotal["r"] /=len(nombresFrames)
+
+
+
+
+
+
+
+            #nombresFrames = dictNombreCentroNombreFrame[nombreCentro]
             
-            dictCentrosHistrActualizado[title] = acumTotal
-            print(dictCentrosHistrActualizado)
+            #for nombreCentroDentro in dictNombreCentroNombreFrame.keys():
+            
+                #indiceB, indiceG, indiceR = 0, 0, 0
 
-            #histrCentroActualizado["b"] = np.sum(dictNombreFramesHistograma[dictNombreCentroNombreFrame[nombreCentro]]["b"])#/len(dictCentroNombreFrame[nombreCentro])
-            #histrCentroActualizado["g"] = np.sum(dictNombreFramesHistograma[dictNombreCentroNombreFrame[nombreCentro]]["g"])#/len(dictCentroNombreFrame[nombreCentro])
-            #histrCentroActualizado["r"] = np.sum(dictNombreFramesHistograma[dictNombreCentroNombreFrame[nombreCentro]]["r"])#/len(dictCentroNombreFrame[nombreCentro])
-            #print(histrCentroActualizado)
-               #dictCentrosHistrActualizado[title]["b"] +=
+
+                #if nombreCentroDentro == nombreCentro:
+
+                    #for nombreFrameDentro, histogramaFrame in dictNombreFramesHistograma.items():
+                    #if nombreCentroDentro == nombreCentro:
+                        #print(nombreCentroDentro + ", " + nombreCentro)
+                        #for iB in histogramaFrame["b"]:
+                            #if indiceB < longitudHistr:
+                                #acum["b"][indiceB] += int(iB)/len(dictNombreCentroNombreFrame[nombreCentro])
+                                #indiceB += 1
+                        #for iG in histogramaFrame["g"]:
+                            #if indiceG < longitudHistr:
+                                #acum["g"][indiceG] += int(iG)/len(dictNombreCentroNombreFrame[nombreCentro])
+                                #indiceG += 1
+                        #for iR in histogramaFrame["r"]:
+                            #if indiceR < longitudHistr:
+                                #acum["r"][indiceR] += int(iR)/len(dictNombreCentroNombreFrame[nombreCentro])
+                                #indiceR += 1
+
+                    #dictCentrosHistrActualizado[title] = acum
+
         index += 1
-    
+        
+    #print(dictCentrosHistrActualizado)
     
 
-    return 0
+    return dictCentrosHistrActualizado
 
 
 
