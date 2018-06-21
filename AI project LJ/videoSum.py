@@ -128,9 +128,11 @@ def aplicaKmedias(ListaFrames, K, H, N, INPUTPATH):
         else:
             centrosAlgoritmoAnteriores = centrosAlgoritmo
             centrosAlgoritmo = actualizaCentros(ListaFrames, ListaFramesConClasificacion, centrosAlgoritmo)
-            ListaFramesConClasificacion = dict()
+            
             if centrosAlgoritmo.values() == centrosAlgoritmoAnteriores.values():
                 break
+
+            ListaFramesConClasificacion = dict()
             
 
         clavesMinimas = list()
@@ -148,7 +150,7 @@ def aplicaKmedias(ListaFrames, K, H, N, INPUTPATH):
         
             #print("==============================================")
             distanciaMinima = math.inf
-            for centroInicial, keyCentro in zip(centrosAlgoritmo.values(), centrosAlgoritmo.keys()):
+            for centroHistr, keyCentro in zip(centrosAlgoritmo.values(), centrosAlgoritmo.keys()):
                 # Declaramos una variable para almacenar la distancia total de cada imagen a cada centro
                 distTotal = 0
                 # Declaramos tres variables para ir acumulando las distancias de cada canal de las imágenes
@@ -158,20 +160,20 @@ def aplicaKmedias(ListaFrames, K, H, N, INPUTPATH):
 
                 # Para cada frame del canal 'b' calculamos la distancia con cada centro
                 for iB in frame["b"]:
-                    distB += math.pow(int(iB) - int(centroInicial["b"][indiceB]), 2)
+                    distB += math.pow(int(iB) - int(centroHistr["b"][indiceB]), 2)
                     indiceB += 1
             
                 distBSqrt = math.sqrt(float(distB))
 
                 # Para cada frame del canal 'g' calculamos la distancia con cada centro
                 for iG in frame["g"]:
-                    distG += math.pow(int(iG) - int(centroInicial["g"][indiceG]), 2)
+                    distG += math.pow(int(iG) - int(centroHistr["g"][indiceG]), 2)
                     indiceG += 1
                 distGSqrt = math.sqrt(float(distG))
 
                 # Para cada frame del canal 'r' calculamos la distancia con cada centro
                 for iR in frame["r"]:
-                    distR += math.pow(int(iR) - int(centroInicial["r"][indiceR]), 2)
+                    distR += math.pow(int(iR) - int(centroHistr["r"][indiceR]), 2)
                     indiceR += 1
                 distRSqrt = math.sqrt(float(distR))
 
@@ -212,10 +214,66 @@ def aplicaKmedias(ListaFrames, K, H, N, INPUTPATH):
         #centrosAlgoritmo = actualizaCentros(ListaFrames, ListaFramesConClasificacion, centrosAlgoritmo)
         #print(centrosAlgoritmo)
         print(ListaFramesConClasificacion)
+    listaKeyFrames = calculaCentroidesClases(ListaFrames, ListaFramesConClasificacion, centrosAlgoritmo)
+    #print(listaKeyFrames)
     
-    
+def calculaCentroidesClases(dictNombreFramesHistograma, dictNombreCentroNombreFrames, dictCentrosHistr):
+    listaKeyFrames = list() 
+
+    for nombreCentro in dictNombreCentroNombreFrames.keys():
+        for nombreFrame in dictNombreCentroNombreFrames[nombreCentro]:
+            index = 0
+            for nombreFrameDentro, histrFrame in dictNombreFramesHistograma.items():
+                if nombreFrame == nombreFrameDentro:
+                    indexCentros = 0
+                    distMinima = math.inf
+                    for centroHistr, nombreCentroDentro in zip(dictCentrosHistr.values(), dictCentrosHistr.keys()):
+                        if nombreCentro == nombreCentroDentro:
+                            # Declaramos una variable para almacenar la distancia total de cada imagen a cada centro
+                            distTotal = 0
+                            # Declaramos tres variables para ir acumulando las distancias de cada canal de las imágenes
+                            distB, distG, distR = 0, 0, 0
+                            # Declaramos los índices para cada canal
+                            indiceB, indiceG, indiceR = 0, 0, 0
+
+                            # Para cada frame del canal 'b' calculamos la distancia con cada centro
+                            for iB in histrFrame["b"]:
+                                distB += math.pow(int(iB) - int(centroHistr["b"][indiceB]), 2)
+                                indiceB += 1
+            
+                            distBSqrt = math.sqrt(float(distB))
+
+                            # Para cada frame del canal 'g' calculamos la distancia con cada centro
+                            for iG in histrFrame["g"]:
+                                distG += math.pow(int(iG) - int(centroHistr["g"][indiceG]), 2)
+                                indiceG += 1
+                            distGSqrt = math.sqrt(float(distG))
+
+                            # Para cada frame del canal 'r' calculamos la distancia con cada centro
+                            for iR in histrFrame["r"]:
+                                distR += math.pow(int(iR) - int(centroHistr["r"][indiceR]), 2)
+                                indiceR += 1
+                            distRSqrt = math.sqrt(float(distR))
+
+                            distTotal = (distBSqrt + distGSqrt + distRSqrt)/3
+
+                            if indexCentros == 0:
+                                listaKeyFrames.append(nombreFrame)
+
+                            if distTotal < distMinima:
+                                distMinima = distTotal
+                                del listaKeyFrames[index]
+                                listaKeyFrames.insert(index, nombreFrame)
+                    
+                            indexCentros += 1
+                    index += 1
+
+    return listaKeyFrames
+
+
+
         
-def actualizaCentros(dictNombreFramesHistograma, dictNombreCentroNombreFrame, dictCentrosHistr):
+def actualizaCentros(dictNombreFramesHistograma, dictNombreCentroNombreFrames, dictCentrosHistr):
     index = 0
     dictCentrosHistrActualizado = dict()
     
@@ -225,25 +283,25 @@ def actualizaCentros(dictNombreFramesHistograma, dictNombreCentroNombreFrame, di
         #acum = {"b": [0]*longitudHistr, "g": [0]*longitudHistr, "r": [0]*longitudHistr}
         title = "Centro actualizado {}".format(index)
         
-        if len(dictNombreCentroNombreFrame[nombreCentro]) == 0:
+        if len(dictNombreCentroNombreFrames[nombreCentro]) == 0:
             dictCentrosHistrActualizado[title] = histrCentro
         else:
             listOfListsB = []
             listOfListsG = []
             listOfListsR = []
 
-            for nombreCentroDentro in dictNombreCentroNombreFrame.keys():
+            for nombreCentroDentro in dictNombreCentroNombreFrames.keys():
                 if nombreCentro == nombreCentroDentro:
-                    for frameNombre in dictNombreCentroNombreFrame[nombreCentro]:
+                    for frameNombre in dictNombreCentroNombreFrames[nombreCentro]:
                         for frameNombreDentro, histogramaFrame in dictNombreFramesHistograma.items():
                             if frameNombre == frameNombreDentro:
                                 listOfListsB.append(histogramaFrame["b"])
                                 listOfListsG.append(histogramaFrame["g"])
                                 listOfListsR.append(histogramaFrame["r"])
             
-            sumaB = [sum(x)/len(dictNombreCentroNombreFrame[nombreCentro]) for x in zip(*listOfListsB)]
-            sumaG = [sum(y)/len(dictNombreCentroNombreFrame[nombreCentro]) for y in zip(*listOfListsG)]
-            sumaR = [sum(z)/len(dictNombreCentroNombreFrame[nombreCentro]) for z in zip(*listOfListsR)]
+            sumaB = [sum(x)/len(dictNombreCentroNombreFrames[nombreCentro]) for x in zip(*listOfListsB)]
+            sumaG = [sum(y)/len(dictNombreCentroNombreFrames[nombreCentro]) for y in zip(*listOfListsG)]
+            sumaR = [sum(z)/len(dictNombreCentroNombreFrames[nombreCentro]) for z in zip(*listOfListsR)]
 
             histrSuma["b"] = sumaB
             histrSuma["g"] = sumaG
@@ -259,7 +317,7 @@ def actualizaCentros(dictNombreFramesHistograma, dictNombreCentroNombreFrame, di
 
 
             
-            #for nombreCentroDentro in dictNombreCentroNombreFrame.keys():
+            #for nombreCentroDentro in dictNombreCentroNombreFrames.keys():
             
                 #indiceB, indiceG, indiceR = 0, 0, 0
 
@@ -271,15 +329,15 @@ def actualizaCentros(dictNombreFramesHistograma, dictNombreCentroNombreFrame, di
                         #print(nombreCentroDentro + ", " + nombreCentro)
                         #for iB in histogramaFrame["b"]:
                             #if indiceB < longitudHistr:
-                                #acum["b"][indiceB] += int(iB)/len(dictNombreCentroNombreFrame[nombreCentro])
+                                #acum["b"][indiceB] += int(iB)/len(dictNombreCentroNombreFrames[nombreCentro])
                                 #indiceB += 1
                         #for iG in histogramaFrame["g"]:
                             #if indiceG < longitudHistr:
-                                #acum["g"][indiceG] += int(iG)/len(dictNombreCentroNombreFrame[nombreCentro])
+                                #acum["g"][indiceG] += int(iG)/len(dictNombreCentroNombreFrames[nombreCentro])
                                 #indiceG += 1
                         #for iR in histogramaFrame["r"]:
                             #if indiceR < longitudHistr:
-                                #acum["r"][indiceR] += int(iR)/len(dictNombreCentroNombreFrame[nombreCentro])
+                                #acum["r"][indiceR] += int(iR)/len(dictNombreCentroNombreFrames[nombreCentro])
                                 #indiceR += 1
 
                     #dictCentrosHistrActualizado[title] = acum
@@ -301,7 +359,7 @@ def CalcularFotogramasClave(INPUTPATH, T, K, H, N):
     aplicaKmedias(ListaFrames, K, H, N, INPUTPATH)
 
 
-CalcularFotogramasClave("C:\\Users\\Juanmi\\Desktop\\Pictures AI project", 5, 10, 180, 4)
+CalcularFotogramasClave("C:\\Users\\Juanmi\\Desktop\\Pictures AI project", 15, 5, 256, 4)
 #CalcularFotogramasClave("C:\\Users\\Juanmi\\Desktop\\video manu",10,20,256)
 #aplicaKmedias(list(), 3, 256)
 #listaPrueba = calcularCentrosIniciales(256, 3)
