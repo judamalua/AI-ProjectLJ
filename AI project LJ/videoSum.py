@@ -196,6 +196,7 @@ def aplicaKmedias(ListaFrames, K, H, INPUTPATH):
     #print(centrosIniciales)
     #print("==============================================================")
     centrosAlgoritmo = actualizaCentros(ListaFrames, ListaFramesConClasificacion, centrosAlgoritmo)
+    print(centrosAlgoritmo)
     
     
         
@@ -208,7 +209,6 @@ def actualizaCentros(dictNombreFramesHistograma, dictNombreCentroNombreFrame, di
         histrSuma = dict()
         #acum = {"b": [0]*longitudHistr, "g": [0]*longitudHistr, "r": [0]*longitudHistr}
         title = "Centro actualizado {}".format(index)
-        #print(len(dictNombreCentroNombreFrame[nombreCentro]))
         
         if len(dictNombreCentroNombreFrame[nombreCentro]) == 0:
             dictCentrosHistrActualizado[title] = histrCentro
@@ -241,7 +241,6 @@ def actualizaCentros(dictNombreFramesHistograma, dictNombreCentroNombreFrame, di
 
 
 
-            #nombresFrames = dictNombreCentroNombreFrame[nombreCentro]
             
             #for nombreCentroDentro in dictNombreCentroNombreFrame.keys():
             
@@ -269,10 +268,7 @@ def actualizaCentros(dictNombreFramesHistograma, dictNombreCentroNombreFrame, di
                     #dictCentrosHistrActualizado[title] = acum
 
         index += 1
-        
-    #print(dictCentrosHistrActualizado)
     
-
     return dictCentrosHistrActualizado
 
 
