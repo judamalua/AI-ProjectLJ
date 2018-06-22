@@ -5,12 +5,8 @@ import numpy as np
 from random import randint
 import math
 
-#calcularFotogramasClave("C:\\Users\\Juanmi\\Desktop\\Pictures AI project", 5, 10, 256, 15, "C:\\Users\\Juanmi\\Desktop\\Resultado IA")
-calcularFotogramasClave("C:\\Users\\Juanmi\\Desktop\\Pictures AI project", 5, 10, 256, 15, "C:\\Users\\Juanmi\\Desktop\\Resultado IA")
-#calcularFotogramasClave("C:\\Users\\Juanmi\\Desktop\\video manu",10,20,256, 15, "C:\\Users\\Juanmi\\Desktop\\Resultado IA")
 
-
-def calcularFotogramasClave(INPUTPATH, T, K, H, N, OUTPUTPATH):
+def CalcularFotogramasClave(INPUTPATH, T, K, H, N, OUTPUTPATH):
     ListaFrames = dict()
     if __name__ == '__main__':
         ListaFrames = recorre_imagenes(INPUTPATH, T, H)
@@ -347,3 +343,7 @@ def actualizaCentros(dictNombreFramesHistograma, dictNombreCentroNombreFrames, d
         index += 1
     
     return dictCentrosHistrActualizado
+
+
+CalcularFotogramasClave("C:\\Users\\Juanmi\\Desktop\\Pictures AI project", 5, 10, 256, 15, "C:\\Users\\Juanmi\\Desktop\\Resultado IA")
+#CalcularFotogramasClave("C:\\Users\\Juanmi\\Desktop\\video manu",10,20,256, 15, "C:\\Users\\Juanmi\\Desktop\\Resultado IA")
