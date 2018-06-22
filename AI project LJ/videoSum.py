@@ -55,6 +55,7 @@ def escribirImagenes(INPUTPATH, OUTPUTPATH, listaKeyFrames):
     path = INPUTPATH
     nombreImagenAImprimir = ""
 
+    # Si ya hay imágenes en la ruta de salida las eliminamos
     if len(os.listdir(OUTPUTPATH)) != 0:
         for imagenParaBorrar in os.listdir(OUTPUTPATH):
             deletePath = os.path.join(OUTPUTPATH, imagenParaBorrar)
@@ -65,7 +66,7 @@ def escribirImagenes(INPUTPATH, OUTPUTPATH, listaKeyFrames):
 
         for nombreFrame in listaKeyFrames:
             if input_path == nombreFrame:
-                nombreImagenAImprimir = nombreFrame.split("\\")[-1]
+                nombreImagenAImprimir = nombreFrame.split("\\")[-1] # Toma el último valor de la lista
                 img = cv2.cv2.imread(input_path)
                 cv2.cv2.imwrite(OUTPUTPATH + "/" + nombreImagenAImprimir, img)
 
