@@ -5,7 +5,10 @@ import numpy as np
 from random import randint
 import math
 
-
+# T: Indica el número de fotogramas a saltar
+# K: Indica el número de centros a generar
+# H: Indica el tamaño del histograma generado para cada canal
+# N: Indica el número de iteraciones a ejecutar por el algoritmo si los centros siguen cambiando
 def CalcularFotogramasClave(INPUTPATH, T, K, H, N, OUTPUTPATH):
     ListaFrames = dict()
     if __name__ == '__main__':
@@ -52,17 +55,23 @@ def escribirImagenes(INPUTPATH, OUTPUTPATH, listaKeyFrames):
     path = INPUTPATH
     nombreImagenAImprimir = ""
 
+    if len(os.listdir(OUTPUTPATH)) != 0:
+        for imagenParaBorrar in os.listdir(OUTPUTPATH):
+            deletePath = os.path.join(OUTPUTPATH, imagenParaBorrar)
+            os.remove(deletePath)
+
     for image in os.listdir(path):
         input_path = os.path.join(path, image)
-
-        img = cv2.cv2.imread(input_path)
 
         for nombreFrame in listaKeyFrames:
             if input_path == nombreFrame:
                 nombreImagenAImprimir = nombreFrame.split("\\")[-1]
+                img = cv2.cv2.imread(input_path)
                 cv2.cv2.imwrite(OUTPUTPATH + "/" + nombreImagenAImprimir, img)
 
-    print("Imágenes escritas con éxito en {}".format(OUTPUTPATH))
+    print("=================================================================================================")
+    print("Resumen finalizado, el resultado se almacenó en \"{}\"".format(OUTPUTPATH))
+    print("=================================================================================================")
 
 def calcularCentrosIniciales(INPUTPATH, H, K):
     ListaCentros = dict()
@@ -143,7 +152,7 @@ def aplicaKmedias(ListaFrames, K, H, N, INPUTPATH, OUTPUTPATH):
     
 
     for n in range(0, N):
-        print("Iteración: {}".format(n + 1))
+        #print("Iteración: {}".format(n + 1))
 
         ListaFramesConClasificacion = dict()
 
@@ -209,10 +218,10 @@ def aplicaKmedias(ListaFrames, K, H, N, INPUTPATH, OUTPUTPATH):
     
         # Estas líneas nos permiten ver los cambios de los centros en cada iteración, 
         # descomentar para comprobar, dejar comentado en otro caso
-        indicePrueba = 0
-        for prueba in ListaFramesConClasificacion.values():
-            print("Longitud centro {}: {}".format(indicePrueba, len(prueba)))
-            indicePrueba += 1
+        #indicePrueba = 0
+        #for prueba in ListaFramesConClasificacion.values():
+            #print("Longitud centro {}: {}".format(indicePrueba, len(prueba)))
+            #indicePrueba += 1
         
         # Calculamos los nuevos centros y guardamos los anteriores para comprobar si son iguales
         centrosAlgoritmoAnteriores = centrosAlgoritmo
@@ -235,8 +244,8 @@ def aplicaKmedias(ListaFrames, K, H, N, INPUTPATH, OUTPUTPATH):
         #print(ListaFramesConClasificacion)
 
     listaKeyFrames = calculaCentroidesClases(ListaFrames, ListaFramesConClasificacion, centrosAlgoritmo)
-    print("Frames resumidos: {}".format(len(listaKeyFrames)))
-    print(listaKeyFrames)
+    #print("Frames resumidos: {}".format(len(listaKeyFrames)))
+    #print(listaKeyFrames)
 
     escribirImagenes(INPUTPATH, OUTPUTPATH, listaKeyFrames)
     
@@ -345,5 +354,5 @@ def actualizaCentros(dictNombreFramesHistograma, dictNombreCentroNombreFrames, d
     return dictCentrosHistrActualizado
 
 
-CalcularFotogramasClave("C:\\Users\\Juanmi\\Desktop\\Pictures AI project", 5, 10, 256, 15, "C:\\Users\\Juanmi\\Desktop\\Resultado IA")
+CalcularFotogramasClave("C:\\Users\\Juanmi\\Desktop\\Pictures AI project", 2, 20, 256, 15, "C:\\Users\\Juanmi\\Desktop\\Resultado IA")
 #CalcularFotogramasClave("C:\\Users\\Juanmi\\Desktop\\video manu",10,20,256, 15, "C:\\Users\\Juanmi\\Desktop\\Resultado IA")
