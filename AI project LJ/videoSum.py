@@ -62,7 +62,7 @@ def escribirImagenes(INPUTPATH, OUTPUTPATH, listaKeyFrames):
                 nombreImagenAImprimir = nombreFrame.split("\\")[-1]
                 cv2.cv2.imwrite(OUTPUTPATH + "/" + nombreImagenAImprimir, img)
 
-    print("Imágenes escritas con éxito")
+    print("Imágenes escritas con éxito en {}".format(OUTPUTPATH))
 
 def calcularCentrosIniciales(INPUTPATH, H, K):
     ListaCentros = dict()
