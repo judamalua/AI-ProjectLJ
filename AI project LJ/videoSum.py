@@ -323,11 +323,12 @@ def actualizaCentros(dictNombreFramesHistograma, dictNombreCentroNombreFrames, d
     index = 0
     dictCentrosHistrActualizado = dict()
     
-    
+    # Iteramos sobre los nombres de los centros y sus histogramas
     for nombreCentro, histrCentro in dictCentrosHistr.items():
         histrSuma = dict()
         title = "Centro actualizado {}".format(index)
         
+        # Si el centro no tiene ningún frame asociado, entonces se queda tal cual estaba
         if len(dictNombreCentroNombreFrames[nombreCentro]) == 0:
             dictCentrosHistrActualizado[title] = histrCentro
         else:
@@ -335,27 +336,43 @@ def actualizaCentros(dictNombreFramesHistograma, dictNombreCentroNombreFrames, d
             listOfListsG = []
             listOfListsR = []
 
+            # Si el centro tenía frames asociados, iteramos sobre los nombres de los centros
             for nombreCentroDentro in dictNombreCentroNombreFrames.keys():
+
+                #Si estamos tratando el mismo centro
                 if nombreCentro == nombreCentroDentro:
+
+                    # Iteramos sobre los frames asociados a ese centro
                     for frameNombre in dictNombreCentroNombreFrames[nombreCentro]:
+
+                        # Iteramos sobre los nombres de los frames
                         for frameNombreDentro, histogramaFrame in dictNombreFramesHistograma.items():
+
+                            # Si estamos tratando el mismo frame
                             if frameNombre == frameNombreDentro:
+                                # Añadimos sus canales a la lista de listas de cada canal
                                 listOfListsB.append(histogramaFrame["b"])
                                 listOfListsG.append(histogramaFrame["g"])
                                 listOfListsR.append(histogramaFrame["r"])
             
+            # Hacemos la suma de cada lista de listas dividiendo entre el número de frames asociados 
+            # al centro que estamos tratando en este momento
             sumaB = [sum(x)/len(dictNombreCentroNombreFrames[nombreCentro]) for x in zip(*listOfListsB)]
             sumaG = [sum(y)/len(dictNombreCentroNombreFrames[nombreCentro]) for y in zip(*listOfListsG)]
             sumaR = [sum(z)/len(dictNombreCentroNombreFrames[nombreCentro]) for z in zip(*listOfListsR)]
 
+            # Guardamos las sumas en un histograma
             histrSuma["b"] = sumaB
             histrSuma["g"] = sumaG
             histrSuma["r"] = sumaR
             
+            # Y almacenamos el centro actualizado con su nuevo histograma
             dictCentrosHistrActualizado[title] = histrSuma
 
+        # Aumentamos el índice que nos sirve para poner los nombres a los centros
         index += 1
     
+    # Y finalmente devolvemos los centros actualizados
     return dictCentrosHistrActualizado
 
 
