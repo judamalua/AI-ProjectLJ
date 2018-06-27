@@ -23,14 +23,20 @@ def recorre_imagenes(INPUTPATH, T, H):
     ListaFrames = dict()
 
     for image in os.listdir(path):
+        # Si el índice no coincide con T le añadimos 1
         if index != T:
             index += 1
+
+        # Si coincide, entonces ponemos el índice a 1
         elif index == T:
             index = 1
+
+            # Formamos el input path de la imagen
             input_path = os.path.join(path, image)
 
             #print(input_path)
 
+            # Leemos la imagen que se corresponde con el input path
             img = cv2.cv2.imread(input_path)
 
             #cv2.cv2.imshow('image', img)
@@ -38,12 +44,14 @@ def recorre_imagenes(INPUTPATH, T, H):
             color = ('b', 'g', 'r')
             histr = dict()
 
+            # Calculamos el histograma
             for i,col in enumerate(color):
                 histr[col] = cv2.cv2.calcHist([img], [i], None, [H], [0,H])
                 #print(histr)
                 #plt.plot(histr[col], color = col)
                 #plt.xlim([0,H])
             
+            # Añadimos el histograma a un diccionario {nombre del frame -> histograma}
             ListaFrames[input_path] = histr
         
             #plt.show()
@@ -62,12 +70,20 @@ def escribirImagenes(INPUTPATH, OUTPUTPATH, listaKeyFrames):
             os.remove(deletePath)
 
     for image in os.listdir(path):
+        # Recorremos las imágenes del directorio y obtenemos sus nombres
         input_path = os.path.join(path, image)
 
         for nombreFrame in listaKeyFrames:
+            # Si el nombre de la imagen que estamos tratando ahora mismo coincide con el nombre de una de las
+            # imágenes en la lista de key frames
             if input_path == nombreFrame:
+                # Tomamos el nombre de la imagen
                 nombreImagenAImprimir = nombreFrame.split("\\")[-1] # Toma el último valor de la lista
+
+                # Leemos la imagen
                 img = cv2.cv2.imread(input_path)
+
+                # Y finalmente la escribimos con el mismo nombre que tenía en la ruta indicada en OUTPUTPATH
                 cv2.cv2.imwrite(OUTPUTPATH + "/" + nombreImagenAImprimir, img)
 
     print("=================================================================================================")
@@ -80,6 +96,8 @@ def calcularCentrosIniciales(INPUTPATH, H, K):
     ListaFramesTotales = dict()
     color = ('b', 'g', 'r')
 
+    # Para calcular los centros iniciales primero recorremos todas las imágenes y almacenamos sus historamas
+    # en ListaFramesTotales
     for image in os.listdir(path):
         input_path = os.path.join(path, image)
 
@@ -102,7 +120,7 @@ def calcularCentrosIniciales(INPUTPATH, H, K):
         ListaFramesTotales[input_path] = histr
         
             
-    
+    # Para cada centro que se quiera generar
     for index in range(K):
         histr1 = dict()
         histr2 = dict()
@@ -115,36 +133,29 @@ def calcularCentrosIniciales(INPUTPATH, H, K):
         sumaG = 0
         sumaR = 0
 
+        # Tomamos 3 histogramas aleatorios de la lista de frames totales
         title = "Centro aleatorio {}".format(index)
         histr1 = list(ListaFramesTotales.values())[aleatorio1]
         histr2 = list(ListaFramesTotales.values())[aleatorio2]
         histr3 = list(ListaFramesTotales.values())[aleatorio3]
 
+        # Almacenamos cada canal en una lista de listas
         listOfListsB = [histr1["b"], histr2["b"], histr3["b"]]
         listOfListsG = [histr1["g"], histr2["g"], histr3["g"]]
         listOfListsR = [histr1["r"], histr2["r"], histr3["r"]]
 
+        # Sumamos los valores de cada canal y lo dividimos entre 3 (Número de histogramas sumados)
         sumaB = [sum(x)/3 for x in zip(*listOfListsB)]
         sumaG = [sum(y)/3 for y in zip(*listOfListsG)]
         sumaR = [sum(z)/3 for z in zip(*listOfListsR)]
         
+        # Los almacenamos en un nuevo histograma que será uno de los centros iniciales
         histrSuma["b"] = sumaB
         histrSuma["g"] = sumaG
         histrSuma["r"] = sumaR
 
-        ##ListaCentros[title] = histr1
-
+        # Finalmente añadimos el histograma a la lista de centros
         ListaCentros[title] = histrSuma
-
-        ##for k,colR in enumerate(color):
-            #histr[colR] = cv2.cv2.calcHist([randImg], [k], None, [H], [0,H])
-            ##print(histrSuma)
-            ##plt.plot(histrSuma[colR], color = colR)
-            ##plt.xlim([0,H])
-        
-        #ListaCentroides[title] = histr
-    
-        ##plt.show()
 
     return ListaCentros
 
@@ -164,14 +175,13 @@ def aplicaKmedias(ListaFrames, K, H, N, INPUTPATH, OUTPUTPATH):
             # Ponemos esta variable a False para que no se vuelva a entrar en este bloque condicional
             primerCalculoCentros = False
     
-        # Creamos una lista vacía para cada 
+        # Creamos una lista vacía para cada centro
         for keyCentro in centrosAlgoritmo.keys():
             ListaFramesConClasificacion[keyCentro] = list()
 
         for frame, keyFrame in zip(ListaFrames.values(), ListaFrames.keys()):
             nombreCentro = ""
         
-            #print("==============================================")
             distanciaMinima = math.inf
             for centroHistr, keyCentro in zip(centrosAlgoritmo.values(), centrosAlgoritmo.keys()):
                 # Declaramos una variable para almacenar la distancia total de cada imagen a cada centro
@@ -203,7 +213,6 @@ def aplicaKmedias(ListaFrames, K, H, N, INPUTPATH, OUTPUTPATH):
                 # Para calcular la distancia total, sumamos las distancias de cada canal y dividimos entre 3 (número de canales)
                 distTotal = (distBSqrt + distGSqrt + distRSqrt)/3
 
-                #print(distTotal)
 
                 # Si la distancia total es menor que la distancia mínima actual, esta distancia total será
                 # la nueva distancia mínima
@@ -238,11 +247,6 @@ def aplicaKmedias(ListaFrames, K, H, N, INPUTPATH, OUTPUTPATH):
         # Si los centros son iguales dejamos de iterar
         if centrosSonIguales == True:
             break
-
-        #print("==============================================================")
-        #centrosAlgoritmo = actualizaCentros(ListaFrames, ListaFramesConClasificacion, centrosAlgoritmo)
-        #print(centrosAlgoritmo)
-        #print(ListaFramesConClasificacion)
 
     listaKeyFrames = calculaCentroidesClases(ListaFrames, ListaFramesConClasificacion, centrosAlgoritmo)
     #print("Frames resumidos: {}".format(len(listaKeyFrames)))
@@ -307,7 +311,7 @@ def calculaCentroidesClases(dictNombreFramesHistograma, dictNombreCentroNombreFr
                             distMinima = distTotal # Actualizamos la distancia mínima
                             nombreFrameDistMinima = nombreFrame # Tomamos el frame actual como el frame con menor distancia al centro
 
-                    # Tras todas las iteraciones añadimos el frame con menor distancia a listaKeyFrames
+                    # Tras terminar todas las iteraciones añadimos el frame con menor distancia a listaKeyFrames
                     listaKeyFrames.append(nombreFrameDistMinima)
 
     return listaKeyFrames
