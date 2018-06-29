@@ -376,5 +376,4 @@ def actualizaCentros(dictNombreFramesHistograma, dictNombreCentroNombreFrames, d
     return dictCentrosHistrActualizado
 
 
-CalcularFotogramasClave("C:\\Users\\Juanmi\\Desktop\\Pictures AI project", 2, 20, 256, 15, "C:\\Users\\Juanmi\\Desktop\\Resultado IA")
-#CalcularFotogramasClave("C:\\Users\\Juanmi\\Desktop\\video manu",10,20,256, 15, "C:\\Users\\Juanmi\\Desktop\\Resultado IA")
+CalcularFotogramasClave("C:\\Users\\Juanmi\\Desktop\\Pictures AI project", 2, 15, 255, 30, "C:\\Users\\Juanmi\\Dropbox\\Carpeta trabajos tercero\\Resultados IA jl\\Resultados")
